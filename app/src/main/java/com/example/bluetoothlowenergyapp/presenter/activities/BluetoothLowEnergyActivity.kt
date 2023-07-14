@@ -6,25 +6,22 @@ import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,10 +80,38 @@ class BluetoothLowEnergyActivity : ComponentActivity() {
                 val viewModel = hiltViewModel<BluetoothViewModel>()
                 val state by viewModel.state.collectAsState()
                 // A surface container using the 'background' color from the theme
+                LaunchedEffect(state.errorMessage) {
+                    state.errorMessage?.let {
+                        Toast.makeText(applicationContext, it, Toast.LENGTH_LONG).show()
+                    }
+                }
+                LaunchedEffect(key1 = state.isConnected) {
+                    if (state.isConnected) {
+                        Toast.makeText(applicationContext, "Your are CONNECTED", Toast.LENGTH_LONG).show()
+                    }
+                }
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    DevicesScreen(state, onStartScan = {
-                        viewModel.startScan()
-                    }, onStopScan = { viewModel.stopScan() })
+                    when {
+                        state.isConnecting -> Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                            Text(text = "Connecting...")
+                        }
+                        else -> {
+                            DevicesScreen(
+                                state,
+                                onStartScan = {
+                                    viewModel.startScan()
+                                },
+                                onStopScan = { viewModel.stopScan() },
+                                onDeviceClick = viewModel::connectToDevice,
+                                onStartServer = viewModel::waitForIncomingConnection
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -97,13 +122,17 @@ class BluetoothLowEnergyActivity : ComponentActivity() {
 fun DevicesScreen(
     bluetoothUIState: BluetoothUIState,
     onStartScan: (() -> Unit),
-    onStopScan: (() -> Unit)
+    onStopScan: (() -> Unit),
+    onStartServer: (() -> Unit),
+    onDeviceClick: ((BluetoothDeviceDomain) -> Unit),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         BluetoothDeviceList(
             scannedDevices = bluetoothUIState.scannedDevices,
             pairedDevices = bluetoothUIState.pairedDevices,
-            onClick = {}, modifier = Modifier
+            onClick = {
+                onDeviceClick.invoke(it)
+            }, modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         )
@@ -113,6 +142,9 @@ fun DevicesScreen(
             }
             OutlinedButton(onClick = { onStopScan.invoke() }) {
                 Text(text = "Stop Scan")
+            }
+            OutlinedButton(onClick = { onStartServer.invoke() }) {
+                Text(text = "Start Server")
             }
         }
     }
