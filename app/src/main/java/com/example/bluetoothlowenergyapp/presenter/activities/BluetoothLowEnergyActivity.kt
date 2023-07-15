@@ -189,7 +189,7 @@ fun BluetoothDeviceList(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .clickable { onClick.invoke(it) },
-                text = it.name ?: "No name",
+                text = it.name ?: it.address,
                 fontWeight = FontWeight.Bold,
             )
         }

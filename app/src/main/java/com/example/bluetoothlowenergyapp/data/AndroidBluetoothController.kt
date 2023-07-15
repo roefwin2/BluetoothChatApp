@@ -113,7 +113,7 @@ class AndroidBluetoothController(
             if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
                 throw SecurityException("No BLUETOOTH_CONNECT permission")
             }
-            //to launch a server => return bluetooht socket
+            //to launch a server => return bluetooth socket
             currentServerSocket = bluetoothAdapter?.listenUsingInsecureRfcommWithServiceRecord(
                 "bluetooth_service",
                 UUID.fromString(SERVICE_UUID)
