@@ -1,5 +1,6 @@
 package com.example.bluetoothlowenergyapp.domain
 
+import com.example.bluetoothlowenergyapp.domain.chat.BluetoothMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,8 @@ interface BluetoothController {
 
     //executed by party B wich connects to a device that has launch a server
     fun connectToDevice(device: BluetoothDevice): Flow<ConnectionResult>
+
+    suspend fun trySendMessage(message:String): BluetoothMessage? // sucess to send messege return Bluetooth messege et can add it in viewmdoel to refresh UI
 
     fun closeConnection()
     fun release()

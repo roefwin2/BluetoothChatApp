@@ -29,6 +29,7 @@ import com.example.bluetoothlowenergyapp.domain.BluetoothDeviceDomain
 import com.example.bluetoothlowenergyapp.presenter.BluetoothUIState
 import com.example.bluetoothlowenergyapp.presenter.BluetoothViewModel
 import com.example.bluetoothlowenergyapp.presenter.activities.ui.theme.BluetoothLowEnergyAppTheme
+import com.example.bluetoothlowenergyapp.presenter.chat.ChatScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -99,6 +100,13 @@ class BluetoothLowEnergyActivity : ComponentActivity() {
                         ) {
                             CircularProgressIndicator()
                             Text(text = "Connecting...")
+                        }
+                        state.isConnected -> {
+                            ChatScreen(
+                                state = state,
+                                onDisconnect = viewModel::disconnectFromDevice,
+                                onSendMessage = viewModel::sendMessage
+                            )
                         }
                         else -> {
                             DevicesScreen(
