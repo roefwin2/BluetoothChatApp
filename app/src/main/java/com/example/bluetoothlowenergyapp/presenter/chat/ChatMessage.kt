@@ -2,6 +2,7 @@ package com.example.bluetoothlowenergyapp.presenter.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -33,8 +34,14 @@ fun ChatMessage(
             )
             .background(if (message.isFromCurrentUser) Color.Cyan else Color.Magenta)
     ) {
-        Text(text = message.senderName, fontSize = 10.sp, color = Color.Black)
-        Text(text = message.message, color = Color.Black, modifier = Modifier.widthIn(250.dp)) // Not exceddd 250 dp
+        Text(text = message.senderName, fontSize = 10.sp, color = Color.Black, modifier = Modifier.padding(4.dp))
+        Text(
+            text = message.message,
+            color = Color.Black,
+            modifier = Modifier
+                .widthIn(250.dp)
+                .padding(4.dp)
+        ) // Not exceddd 250 dp
     }
 }
 
@@ -42,6 +49,6 @@ fun ChatMessage(
 @Composable
 fun ChatMessagePreview() {
     BluetoothLowEnergyAppTheme() {
-        ChatMessage(message = BluetoothMessage("Hello la France", "Xiaomi", true))
+        ChatMessage(message = BluetoothMessage("Hello la France", "Xiaomi", false))
     }
 }

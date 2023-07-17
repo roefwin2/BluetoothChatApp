@@ -52,7 +52,9 @@ fun ChatScreen(
         ) {
             items(state.messages) { bluetoothMessage: BluetoothMessage ->
                 //Column to have the choice on the left or the right
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)) {
                     ChatMessage(
                         message = bluetoothMessage,
                         modifier = Modifier.align(if (bluetoothMessage.isFromCurrentUser) Alignment.End else Alignment.Start)
@@ -72,6 +74,7 @@ fun ChatScreen(
             })
             IconButton(onClick = {
                 onSendMessage.invoke(message.value)
+                message.value = ""
                 keyboardController?.hide()
             }) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Send Message")
